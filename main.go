@@ -29,10 +29,17 @@ func handleConnections(conn net.Conn) {
 			break
 		}
 
-		price := rand.Int()
-		result := strconv.Itoa(price) + "\n"
+		if temp == "CHECK" {
+			ok := "ok\n"
+			conn.Write([]byte(string(ok)))
+		} else {
 
-		conn.Write([]byte(string(result)))
+			price := rand.Int()
+			log.Printf("Sending price: %v", price)
+			result := strconv.Itoa(price) + "\n"
+
+			conn.Write([]byte(string(result)))
+		}
 
 	}
 }
