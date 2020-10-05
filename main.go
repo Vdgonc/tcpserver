@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func handleConnections(conn net.Conn) {
+func HandleConnections(conn net.Conn) {
 	fmt.Printf("Serving %s\n", conn.RemoteAddr().String())
 
 	for {
@@ -64,7 +64,7 @@ func main() {
 			return
 		}
 
-		go handleConnections(c)
+		go HandleConnections(c)
 	}
 
 }
