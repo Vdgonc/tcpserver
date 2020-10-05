@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -44,10 +45,10 @@ func HandleConnections(conn net.Conn) {
 }
 
 func main() {
-	PORT := ":10000"
+	PORT := os.Getenv("ENV_PORT")
 	fmt.Printf("Server listen on %s\n", PORT)
 
-	l, err := net.Listen("tcp4", PORT)
+	l, err := net.Listen("tcp4", ":"+PORT)
 	if err != nil {
 		log.Fatal(err)
 	}
