@@ -12,6 +12,19 @@ import (
 	"time"
 )
 
+func Timer(ch <-chan bool) {
+	started := time.Now()
+	for {
+		stop := <-ch
+		if stop {
+			stopped := time.Now()
+			diff := stopped.Sub(started)
+			log.Printf("First connection %.0fs", diff.Seconds())
+			break
+		}
+	}
+}
+
 func HandleConnections(conn net.Conn) {
 	fmt.Printf("Serving %s\n", conn.RemoteAddr().String())
 
@@ -34,9 +47,9 @@ func HandleConnections(conn net.Conn) {
 			conn.Write([]byte(string(ok)))
 		} else {
 
-			price := rand.Int()
-			log.Printf("Sending price: %v", price)
-			result := strconv.Itoa(price) + "\n"
+			number := rand.Int()
+			log.Printf("Sending number: %v", number)
+			result := strconv.Itoa(number) + "\n"
 
 			conn.Write([]byte(string(result)))
 		}
@@ -55,7 +68,8 @@ func main() {
 
 	defer l.Close()
 
-	rand.Seed(time.Now().Unix())
+	ch := make(chan bool, 1)
+	go Timer(ch)
 
 	for {
 		c, err := l.Accept()
@@ -63,7 +77,7 @@ func main() {
 			log.Println(err)
 			return
 		}
-
+		ch <- true
 		go HandleConnections(c)
 	}
 
