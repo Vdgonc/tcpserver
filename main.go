@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"net"
@@ -26,23 +27,25 @@ func Timer(ch <-chan bool) {
 }
 
 func HandleConnections(conn net.Conn) {
-	fmt.Printf("Serving %s\n", conn.RemoteAddr().String())
+	fmt.Printf("Connected with %s\n", conn.RemoteAddr().String())
 
 	for {
 		netData, err := bufio.NewReader(conn).ReadString('\n')
 
-		if err != nil {
-			log.Println(err)
+		if err != nil || err == io.EOF {
+			log.Printf("Connection closed by %s", conn.RemoteAddr().String())
 			return
 		}
 
 		temp := strings.TrimSpace(string(netData))
 
 		if temp == "STOP" {
+			log.Printf("Connection with %s closed by stop command", conn.RemoteAddr().String())
 			break
 		}
 
 		if temp == "CHECK" {
+			log.Println("Sending check ok")
 			ok := "ok\n"
 			conn.Write([]byte(string(ok)))
 		} else {
